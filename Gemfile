@@ -33,6 +33,18 @@ gem 'jbuilder', '~> 2.5'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
+# My gems:
+gem 'grape'
+gem 'grape-active_model_serializers'
+gem 'rack-cors', :require => 'rack/cors'
+
+gem 'grape-swagger'
+gem 'grape-swagger-rails'
+
+gem 'react-rails'
+
+gem 'ancestry'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
