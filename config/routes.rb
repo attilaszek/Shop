@@ -5,4 +5,7 @@ Rails.application.routes.draw do
 
   mount GrapeSwaggerRails::Engine, at: "/documentation"
   
+  root to: 'site#index'
+
+  get '/admin', to: 'site#admin_index'
 end

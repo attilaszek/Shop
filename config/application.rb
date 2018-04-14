@@ -22,5 +22,7 @@ module Shop
             :post, :put, :delete, :options]
       end
     end
+
+    config.autoload_paths << Rails.root.join('lib')
   end
 end

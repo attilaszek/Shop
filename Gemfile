@@ -42,8 +42,16 @@ gem 'grape-swagger'
 gem 'grape-swagger-rails'
 
 gem 'react-rails'
+gem 'axios_rails'
+
+gem 'bootstrap-sass', '~> 3.3.7'
+gem 'jquery-rails'
+gem 'rails_bootstrap_navbar'
 
 gem 'ancestry'
+
+gem 'bcrypt', '~> 3.1.7'
+gem 'jwt' # HMACSHA256 tokens
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

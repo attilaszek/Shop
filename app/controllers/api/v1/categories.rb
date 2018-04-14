@@ -4,9 +4,12 @@ module API
       include API::V1::Defaults
 
       resource :categories do
-        desc "Return all categories"
+        desc "Return categories by parent"
+        params do
+          optional :parent_id, type: Integer, desc: "ID of parent category"
+        end
         get "", root: :categories do
-          Category.all
+          Category.where(ancestry: params[:parent_id])
         end
 
         desc "Return a category"
