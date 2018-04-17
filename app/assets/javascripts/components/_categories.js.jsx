@@ -9,16 +9,37 @@ class Categories extends React.Component {
       lastChild: null,
     };
 
-    this.handleLastChild= this.handleLastChild.bind(this);
+    this.handleLastChild = this.handleLastChild.bind(this);
+  
+    this.childCategories = null;
+    this.childCategoriesRef = element => {
+      this.childCategories = element;
+    }
   }
 
-  componentDidMount() {
-    axios.get('http://localhost:3000/api/v1/categories.json', {
+  reloadCategories(parent_id) {
+    if (parent_id == this.state.parentCategoryId) {
+      this.loadCategories();
+      this.setState({
+        activeCategoryId: null,
+        lastChild: null,
+      });
+      this.props.setLastChild(parent_id);
+    }
+    else {
+      alert(this.state.parentCategoryId);
+      this.childCategories.reloadCategories(parent_id);
+    }
+  }
+
+  loadCategories() {
+     axios.get('http://localhost:3000/api/v1/categories.json', {
       params: {
         parent_id: this.state.parentCategoryId
       }
     })
       .then(response => {
+        console.log(response);
         if (response.data.length == 0) {
           //alert("Empty category")
         }
@@ -27,6 +48,10 @@ class Categories extends React.Component {
         }
       })
       .catch(error => console.log(error))
+  }
+
+  componentDidMount() {
+    this.loadCategories();
   }
 
   toggleCategory(id) {
@@ -53,7 +78,7 @@ class Categories extends React.Component {
                   {category.id} {category.name}: {category.ancestry}
                 </li>
                 {category.id == this.state.activeCategoryId &&
-                  <Categories level={this.state.level + 1} parentCategoryId={category.id}
+                  <Categories ref={this.childCategoriesRef} level={this.state.level + 1} parentCategoryId={category.id}
                     setLastChild={this.handleLastChild}
                   />
                 }
