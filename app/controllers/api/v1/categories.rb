@@ -28,11 +28,12 @@ module API
           optional :ancestry, type: Integer, desc: "ID of parent category (if exists)"
         end
         post do
-          Category.create!({
+          @category = Category.new({
             name: params[:name],
             description: params[:description],
             ancestry: params[:ancestry]
           })
+          @category.save
         end
 
         desc "Update a category"

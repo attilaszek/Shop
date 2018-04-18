@@ -1,38 +1,23 @@
 class Categories extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       categories: [],
       activeCategoryId: null,
       parentCategoryId: props.parentCategoryId,
       level: parseInt(props.level),
-      lastChild: null,
-    };
-
-    this.handleLastChild = this.handleLastChild.bind(this);
-  
-    this.childCategories = null;
-    this.childCategoriesRef = element => {
-      this.childCategories = element;
     }
+
+    this.loadCategories = this.loadCategories.bind(this);
   }
 
-  reloadCategories(parent_id) {
-    if (parent_id == this.state.parentCategoryId) {
-      this.loadCategories();
+  loadCategories(resetActive = false) {
+    if (resetActive) {
       this.setState({
-        activeCategoryId: null,
-        lastChild: null,
-      });
-      this.props.setLastChild(parent_id);
+        activeCategoryId: null
+      })
     }
-    else {
-      alert(this.state.parentCategoryId);
-      this.childCategories.reloadCategories(parent_id);
-    }
-  }
 
-  loadCategories() {
      axios.get('http://localhost:3000/api/v1/categories.json', {
       params: {
         parent_id: this.state.parentCategoryId
@@ -61,38 +46,48 @@ class Categories extends React.Component {
     }
   }
 
-  handleLastChild(id) {
-    this.setState({
-      lastChild: id,
-    });
-    if (this.props.setLastChild) {
-      this.props.setLastChild(id == null ? this.state.activeCategoryId : id);
-    }
-  }
-
   render() {
     var categories = this.state.categories.map((category) => {
         return (
             <div className={'categoryLevel'+this.state.level} key={category.id}>
                 <li className={category.id == this.state.activeCategoryId ? "active" : ""} onClick={this.toggleCategory.bind(this, category.id)}>
-                  {category.id} {category.name}: {category.ancestry}
+                  {category.name}
+                  <span> </span>
+                  {this.props.adminFunctions &&
+                    <DeleteCategory id={category.id} reload={this.loadCategories}/>
+                  }
                 </li>
                 {category.id == this.state.activeCategoryId &&
-                  <Categories ref={this.childCategoriesRef} level={this.state.level + 1} parentCategoryId={category.id}
-                    setLastChild={this.handleLastChild}
+                  <Categories
+                    level={this.state.level + 1}
+                    parentCategoryId={category.id}
+                    adminFunctions={this.props.adminFunctions}
                   />
                 }
             </div>
         )
     });
 
-    return (
-      <div>
+    return(
+      <div className="categories">
+        {this.state.level == 0&&
+          <h3>Categories</h3>
+        }
         <ul className={'nav nav-pills nav-stacked'}> 
           {categories}
+          {this.props.adminFunctions && this.state.activeCategoryId == null &&
+            <li>
+              <NewCategory parent_id={this.state.parentCategoryId} reload={this.loadCategories}/>
+            </li>
+          }
         </ul>
       </div>
     );
   }
+}
 
-};
+Categories.defaultProps = {
+  level: 0,
+  parentCategoryId: null,
+  adminFunctions: false
+}

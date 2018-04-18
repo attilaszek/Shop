@@ -44,20 +44,21 @@ li:hover {
 }
 
 .categoryLevel0 {
+  margin: 0 auto;
   font-size: 16px;
 }
 
 .categoryLevel1 {
-  text-indent: 10px;
+  margin-left: 10px;
   font-size: 14px;
 }
 
 .categoryLevel2 {
-  text-indent: 15px;
+  margin-left: 20px;
   font-size: 12px;
 }
 
 .categoryLevel3 {
-  text-indent: 20px;
+  margin-left: 25px;
   font-size: 12px;
 }
