@@ -3,8 +3,8 @@ class Categories extends React.Component {
     super(props);
     this.state = {
       categories: [],
-      activeCategoryId: null,
-      parentCategoryId: props.parentCategoryId,
+      activeCategory: null,
+      parentCategory: props.parentCategory,
       level: parseInt(props.level),
     }
 
@@ -14,22 +14,23 @@ class Categories extends React.Component {
   loadCategories(resetActive = false) {
     if (resetActive) {
       this.setState({
-        activeCategoryId: null
+        activeCategory: null
       })
     }
 
      axios.get('http://localhost:3000/api/v1/categories.json', {
       params: {
-        parent_id: this.state.parentCategoryId
+        parent_id: this.state.parentCategory ? this.state.parentCategory.id : null
       }
     })
       .then(response => {
         console.log(response);
+        this.setState({categories: response.data})
         if (response.data.length == 0) {
           //alert("Empty category")
         }
         else {
-          this.setState({categories: response.data})
+          
         }
       })
       .catch(error => console.log(error))
@@ -39,29 +40,27 @@ class Categories extends React.Component {
     this.loadCategories();
   }
 
-  toggleCategory(id) {
-    this.setState({activeCategoryId: (this.state.activeCategoryId == id ? null : id)});
-    if (this.props.setLastChild) {
-      this.props.setLastChild(this.state.activeCategoryId == id ? null : id);
-    }
+  toggleCategory(category) {
+    this.setState({activeCategory: (this.state.activeCategory === category ? null : category)});
+    this.props.setActiveCategory(this.state.activeCategory === category ? this.state.parentCategory : category);
   }
 
   render() {
     var categories = this.state.categories.map((category) => {
         return (
             <div className={'categoryLevel'+this.state.level} key={category.id}>
-                <li className={category.id == this.state.activeCategoryId ? "active" : ""} onClick={this.toggleCategory.bind(this, category.id)}>
-                  {category.name}
-                  <span> </span>
+                <li className={category === this.state.activeCategory ? "active" : "" } onClick={this.toggleCategory.bind(this, category)}>
+                  <span>{category.name} </span>
                   {this.props.adminFunctions &&
                     <DeleteCategory id={category.id} reload={this.loadCategories}/>
                   }
                 </li>
-                {category.id == this.state.activeCategoryId &&
+                {category === this.state.activeCategory &&
                   <Categories
                     level={this.state.level + 1}
-                    parentCategoryId={category.id}
+                    parentCategory={category}
                     adminFunctions={this.props.adminFunctions}
+                    setActiveCategory={this.props.setActiveCategory}
                   />
                 }
             </div>
@@ -70,15 +69,16 @@ class Categories extends React.Component {
 
     return(
       <div className="categories">
-        {this.state.level == 0&&
+        {this.state.level == 0 &&
           <h3>Categories</h3>
         }
         <ul className={'nav nav-pills nav-stacked'}> 
           {categories}
-          {this.props.adminFunctions && this.state.activeCategoryId == null &&
-            <li>
-              <NewCategory parent_id={this.state.parentCategoryId} reload={this.loadCategories}/>
-            </li>
+          {this.props.adminFunctions && this.state.activeCategory == null &&
+
+              <div className={'categoryLevel'+(this.state.level)}>
+                <NewCategory parent_id={this.state.parentCategory ? this.state.parentCategory.id : null} reload={this.loadCategories}/>
+              </div>
           }
         </ul>
       </div>
@@ -88,6 +88,7 @@ class Categories extends React.Component {
 
 Categories.defaultProps = {
   level: 0,
-  parentCategoryId: null,
-  adminFunctions: false
+  parentCategory: null,
+  adminFunctions: false,
+  setActiveCategory: null,
 }

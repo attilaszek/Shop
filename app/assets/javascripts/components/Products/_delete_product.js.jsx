@@ -1,4 +1,4 @@
-class DeleteCategory extends React.Component {
+class DeleteProduct extends React.Component {
   constructor(props) {
     super(props)
     this.state={
@@ -9,18 +9,18 @@ class DeleteCategory extends React.Component {
 
   handleClick() {
     var self = this;
-    axios.delete('http://localhost:3000/api/v1/categories/'+this.state.id+'.json', {
+    axios.delete('http://localhost:3000/api/v1/products/'+this.state.id+'.json', {
     })
     .then(response => {
       console.log(response);
-      self.props.reload(true);
+      self.props.reload();
     })
     .catch(error => console.log(error))
   }
 
   render() {
     return(
-      <a onClick={this.handleClick} >[Delete]</a>
+      <a onClick={this.handleClick} >Delete</a>
     );
   }
 }

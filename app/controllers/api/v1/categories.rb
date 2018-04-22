@@ -9,7 +9,12 @@ module API
           optional :parent_id, type: Integer, desc: "ID of parent category"
         end
         get "", root: :categories do
-          Category.where(ancestry: params[:parent_id])
+          if params[:parent_id].present?
+            category = Category.find(params[:parent_id])
+            category.children
+          else
+            Category.where(ancestry: nil)
+          end
         end
 
         desc "Return a category"
@@ -31,7 +36,7 @@ module API
           @category = Category.new({
             name: params[:name],
             description: params[:description],
-            ancestry: params[:ancestry]
+            parent_id: params[:ancestry]
           })
           @category.save
         end
