@@ -7,7 +7,7 @@ class ShowDescription extends React.Component {
   }
 
   render() {
-    var styles = {
+    const styles = {
       background: 'lightgray',
       padding: 3,
       border: 1,

@@ -72,10 +72,9 @@ class Categories extends React.Component {
         {this.state.level == 0 &&
           <h3>Categories</h3>
         }
-        <ul className={'nav nav-pills nav-stacked'}> 
+        <ul className={'nav nav-pills nav-stacked'}>
           {categories}
           {this.props.adminFunctions && this.state.activeCategory == null &&
-
               <div className={'categoryLevel'+(this.state.level)}>
                 <NewCategory parent_id={this.state.parentCategory ? this.state.parentCategory.id : null} reload={this.loadCategories}/>
               </div>

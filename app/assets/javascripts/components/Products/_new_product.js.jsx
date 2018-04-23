@@ -24,6 +24,14 @@ class NewProduct extends React.Component {
     this.setState({description: event.target.value});
   }
 
+  resetState() {
+    this.setState({
+      name: '',
+      price: '',
+      description: '',
+    });
+  }
+
   handleClick() {
     var self = this;
     axios.post('http://localhost:3000/api/v1/products.json', {
@@ -36,11 +44,7 @@ class NewProduct extends React.Component {
       console.log(response);
       self.forceUpdate();
       self.props.reload();
-      self.setState({
-        name: '',
-        price: '',
-        description: '',
-      })
+      self.resetState();
     })
     .catch(function (error) {
       console.log(error);

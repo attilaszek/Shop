@@ -3,6 +3,8 @@ module API
     class Products < Grape::API
       include API::V1::Defaults
 
+      before { authenticate_request }
+
       resource :products do
         desc "Return products by category"
         params do

@@ -3,8 +3,12 @@ class Main extends React.Component {
     return (
       <div>
         <Header />
-        <Body />
+        <Body adminFunctions={this.props.adminFunctions} />
       </div>
     );
   }
 };
+
+Body.defaultProps = {
+  adminFunctions: false,
+}

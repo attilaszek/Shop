@@ -3,6 +3,8 @@ module API
     class Categories < Grape::API
       include API::V1::Defaults
 
+      before { authenticate_request }
+
       resource :categories do
         desc "Return categories by parent"
         params do

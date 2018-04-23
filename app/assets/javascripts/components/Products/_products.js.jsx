@@ -77,9 +77,10 @@ class Products extends React.Component {
                 <a onMouseOver={(evt) => this.handleOnMouseEnter(evt, product.description)} onMouseLeave={this.handleOnMouseLeave}>
                   Description
                 </a>
-                <span> | </span>
                 {this.props.adminFunctions &&
-                  <DeleteProduct id={product.id} reload={this.loadProducts} />
+                  <span>{" | "}
+                    <DeleteProduct id={product.id} reload={this.loadProducts} />
+                  </span>
                 }
               </h5>
               {this.state.show_description &&
@@ -93,11 +94,15 @@ class Products extends React.Component {
 
     return(
       <div>
-        <h4>{this.state.category && "Products in "+this.state.category.name+" category"}</h4>
+        <h3>{this.state.category && "Products in "+this.state.category.name+" category"}</h3>
+        <br />
         {this.props.adminFunctions && this.state.category &&
           <NewProduct category_id={this.state.category.id} reload={this.loadProducts}/>
         }
         {products}
+        {products.length == 0 &&
+          <h4  style={{color: 'red'}}>No products in this category</h4>
+        }
       </div>
     );
   }

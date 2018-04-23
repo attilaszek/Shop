@@ -24,5 +24,6 @@ module Shop
     end
 
     config.autoload_paths << Rails.root.join('lib')
+    config.autoload_paths << Rails.root.join('app/commands')
   end
 end
