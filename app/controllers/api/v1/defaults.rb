@@ -26,9 +26,16 @@ module API
           error_response(message: e.message, status: 404)
         end
 
-        rescue_from ActiveRecord::RecordInvalid do |e|
-          error_response(message: e.message, status: 422)
+        # rescue_from ActiveRecord::RecordInvalid do |e|
+        #   error_response(message: e.message, status: 422)
+        # end
+
+        rescue_from ActiveRecord::RecordInvalid do |error|
+          p "######"
+          message = error.record.errors.messages.map { |attr, msg| msg.first }
+          error!(message.join(", "), 404)
         end
+
       end
     end
   end

@@ -35,6 +35,7 @@ module API
           optional :ancestry, type: Integer, desc: "ID of parent category (if exists)"
         end
         post do
+          return unless current_user.admin
           @category = Category.new({
             name: params[:name],
             description: params[:description],
@@ -51,6 +52,7 @@ module API
           requires :ancestry, type: Integer, desc: "ID of parent category (if exists)"
         end
         put ':id' do
+          return unless current_user.admin
           Category.find(params[:id]).update({
             name: params[:name],
             description: params[:description],
@@ -63,6 +65,7 @@ module API
           requires :id, type: String, desc: "ID of the category"
         end
         delete ':id' do
+          return unless current_user.admin
           Category.find(params[:id]).destroy
         end
       end

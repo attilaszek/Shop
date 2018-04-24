@@ -16,7 +16,7 @@ class Products extends React.Component {
   }
 
   loadProducts() {
-    axios.get('http://localhost:3000/api/v1/products.json', {
+    myAxios.get('products.json', {
       params: {
         category_id: this.state.category ? this.state.category.id : null
       }
@@ -35,7 +35,8 @@ class Products extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if(JSON.stringify(this.props.category) !== JSON.stringify(nextProps.category))
+    if (JSON.stringify(this.props.category) !== JSON.stringify(nextProps.category) 
+      || this.props.switch != nextProps.switch)
     {
       this.setState(
         {

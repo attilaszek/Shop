@@ -7,15 +7,47 @@ module API
         desc 'Log in'
         params do
           requires :email, type: String
-          requires :password, type: String        
+          requires :password, type: String
+          requires :admin, type: Boolean
         end
-        post do
-          command = AuthenticateUser.call(params[:email], params[:password])
+        post "login" do
+          command = AuthenticateUser.call(params[:email], params[:password], params[:admin])
 
           if command.success?
-            render auth_token: command.result
+            {auth_token: command.result}
           else
-            render error: command.errors
+            error!(command.errors, 404)
+          end
+        end
+
+        desc 'Return user'
+        get do
+          authenticate_request
+          current_user
+        end
+
+        desc 'Sign up'
+        params do
+          requires :email, type: String
+          requires :password, type: String
+          requires :password_confirmation, type: String
+          optional :first_name, type: String
+          optional :last_name, type: String
+        end
+        post "signup" do
+          if params[:password] == params[:password_confirmation]
+            @user = User.new({
+              email: params[:email],
+              password: params[:password],
+              first_name: params[:first_name],
+              last_name: params[:last_name],
+              admin: false,
+            })
+            unless @user.save
+              error!(@user.errors.messages, 404)
+            end
+          else
+            error!({password_confirmation: "invalid password confirmation"}, 404)
           end
         end
 

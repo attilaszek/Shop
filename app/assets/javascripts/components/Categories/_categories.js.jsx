@@ -18,7 +18,7 @@ class Categories extends React.Component {
       })
     }
 
-     axios.get('http://localhost:3000/api/v1/categories.json', {
+    myAxios.get('categories.json', {
       params: {
         parent_id: this.state.parentCategory ? this.state.parentCategory.id : null
       }
@@ -34,6 +34,8 @@ class Categories extends React.Component {
         }
       })
       .catch(error => console.log(error))
+
+    this.props.setActiveCategory(this.state.parentCategory);
   }
 
   componentDidMount() {
@@ -42,18 +44,22 @@ class Categories extends React.Component {
 
   toggleCategory(category) {
     this.setState({activeCategory: (this.state.activeCategory === category ? null : category)});
-    this.props.setActiveCategory(this.state.activeCategory === category ? this.state.parentCategory : category);
+    if (this.state.activeCategory === category) this.props.setActiveCategory(this.state.parentCategory);
   }
 
   render() {
     var categories = this.state.categories.map((category) => {
         return (
             <div className={'categoryLevel'+this.state.level} key={category.id}>
-                <li className={category === this.state.activeCategory ? "active" : "" } onClick={this.toggleCategory.bind(this, category)}>
-                  <span>{category.name} </span>
-                  {this.props.adminFunctions &&
-                    <DeleteCategory id={category.id} reload={this.loadCategories}/>
-                  }
+                <li className={category === this.state.activeCategory ? "active" : "" }>
+                  <div style={{float: 'left'}}>
+                    {this.props.adminFunctions &&
+                      <DeleteCategory id={category.id} reload={this.loadCategories}/>
+                    }
+                  </div>
+                  <div onClick={this.toggleCategory.bind(this, category)}>
+                    {category.name} 
+                  </div>
                 </li>
                 {category === this.state.activeCategory &&
                   <Categories

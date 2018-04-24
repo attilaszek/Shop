@@ -9,7 +9,7 @@ class DeleteProduct extends React.Component {
 
   handleClick() {
     var self = this;
-    axios.delete('http://localhost:3000/api/v1/products/'+this.state.id+'.json', {
+    myAxios.delete('products/'+this.state.id+'.json', {
     })
     .then(response => {
       console.log(response);

@@ -9,7 +9,7 @@ class DeleteCategory extends React.Component {
 
   handleClick() {
     var self = this;
-    axios.delete('http://localhost:3000/api/v1/categories/'+this.state.id+'.json', {
+    myAxios.delete('categories/'+this.state.id+'.json', {
     })
     .then(response => {
       console.log(response);

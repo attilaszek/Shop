@@ -38,6 +38,7 @@ module API
           requires :category_id, type: Integer, desc: "ID of category"
         end
         post do
+          return unless current_user.admin
           @product = Product.new({
             name: params[:name],
             price: params[:price],
@@ -55,6 +56,7 @@ module API
           requires :description, type: String, desc: "Short description of the product"
         end
         put ':id' do
+          return unless current_user.admin
           Product.find(params[:id]).update({
             name: params[:name],
             description: params[:description],
@@ -67,6 +69,7 @@ module API
           requires :id, type: String, desc: "ID of the product"
         end
         delete ':id' do
+          return unless current_user.admin
           Product.find(params[:id]).destroy
         end
       end

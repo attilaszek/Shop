@@ -34,7 +34,7 @@ class NewProduct extends React.Component {
 
   handleClick() {
     var self = this;
-    axios.post('http://localhost:3000/api/v1/products.json', {
+    myAxios.post('products.json', {
       name: this.state.name,
       price: this.state.price,
       description: this.state.description,
@@ -44,7 +44,7 @@ class NewProduct extends React.Component {
       console.log(response);
       self.forceUpdate();
       self.props.reload();
-      self.resetState();
+      if (response.data == true) self.resetState();
     })
     .catch(function (error) {
       console.log(error);

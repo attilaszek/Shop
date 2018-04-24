@@ -17,7 +17,7 @@ class NewCategory extends React.Component {
 
   handleClick() {
     var self = this;
-    axios.post('http://localhost:3000/api/v1/categories.json', {
+    myAxios.post('categories.json', {
       name: this.state.name,
       description: this.state.description,
       ancestry: this.state.parent_id

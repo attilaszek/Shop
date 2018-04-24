@@ -1,8 +1,22 @@
 class Main extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoggedIn: false,
+    }
+    this.setLoginStatus = this.setLoginStatus.bind(this);
+  }
+
+  setLoginStatus(status) {
+    this.setState({
+      isLoggedIn: status,
+    });
+  }
+
   render() {
     return (
       <div>
-        <Header />
+        <Header setLoginStatus={this.setLoginStatus} adminFunctions={this.props.adminFunctions}/>
         <Body adminFunctions={this.props.adminFunctions} />
       </div>
     );
@@ -12,3 +26,8 @@ class Main extends React.Component {
 Body.defaultProps = {
   adminFunctions: false,
 }
+
+myAxios = axios.create({
+  baseURL: 'http://localhost:3000/api/v1/',
+  headers: {'Authorization': sessionStorage.getItem('jwtToken')}
+});
