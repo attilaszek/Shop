@@ -12,6 +12,7 @@ class Main extends React.Component {
       isLoggedIn: status,
     });
   }
+  //TODO: setItem = (name ) => (value) => {}
 
   render() {
     return (
