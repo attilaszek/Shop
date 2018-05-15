@@ -11,12 +11,7 @@ module API
           optional :parent_id, type: Integer, desc: "ID of parent category"
         end
         get "", root: :categories do
-          if params[:parent_id].present?
-            category = Category.find(params[:parent_id])
-            category.children
-          else
-            Category.where(ancestry: nil)
-          end
+          Category.cached_categories_by_parent(params[:parent_id])
         end
 
         desc "Return a category"

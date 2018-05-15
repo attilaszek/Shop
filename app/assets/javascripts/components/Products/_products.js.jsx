@@ -8,11 +8,16 @@ class Products extends React.Component {
       pos_y: 0,
       show_description: false,
       description: null,
+      file: '',
+      active_product: null,
     }
 
     this.loadProducts = this.loadProducts.bind(this);
     this.handleOnMouseEnter = this.handleOnMouseEnter.bind(this);
     this.handleOnMouseLeave = this.handleOnMouseLeave.bind(this);
+    this.handleFileChange = this.handleFileChange.bind(this);
+    this.uploadFile = this.uploadFile.bind(this);
+    this.handleClickOnProduct = this.handleClickOnProduct.bind(this);
   }
 
   loadProducts() {
@@ -41,6 +46,7 @@ class Products extends React.Component {
       this.setState(
         {
           category: nextProps.category,
+          active_product: null,
         },
         this.loadProducts
       );
@@ -66,13 +72,58 @@ class Products extends React.Component {
     });
   }
 
+  uploadFile(file) {
+    var self = this;
+    myAxios.post('products/upload.json', {
+      file_b64: file,
+      category_id: this.state.category ? this.state.category.id : null,
+    })
+    .then(function (response) {
+      self.loadProducts();
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
+
+  handleFileChange(event) {
+    var self = this;
+    var reader = new FileReader();
+    reader.readAsDataURL(event.target.files[0]);
+    reader.onload = function () {
+      self.uploadFile(reader.result);
+      console.log(reader.result);
+      self.setState({
+        file: reader.result,
+      });
+    };
+    reader.onerror = function (error) {
+      console.log('Error: ', error);
+    };
+  }
+
+  handleClickOnProduct(event, index) {
+    if (this.state.active_product == this.state.products[index]) {
+      this.setState({
+        active_product: null,
+      });
+    }
+    else {
+      this.setState({
+        active_product: this.state.products[index],
+      });      
+    }
+  }
+
   render() {
-    var products = this.state.products.map((product) => {
+    var products = this.state.products.map((product, index) => {
         return (
-            <div key={product.id} style={product_styles}>
-              <h4>#{product.id}</h4>
+            <div key={product.id} style={product_styles} onClick={(evt) => this.handleClickOnProduct(evt, index)}>
+              <div style={{width: product_styles.width, height: product_styles.width}}>
+                <img style={img_styles} src={product.image_b64}></img>
+              </div>
               <h4>{product.name}</h4>
-              <br />
               <h4>Price: ${product.price}</h4>
               <h5>
                 <a onMouseOver={(evt) => this.handleOnMouseEnter(evt, product.description)} onMouseLeave={this.handleOnMouseLeave}>
@@ -96,9 +147,16 @@ class Products extends React.Component {
     return(
       <div>
         <h3>{this.state.category && "Products in "+this.state.category.name+" category"}</h3>
-        <br />
         {this.props.adminFunctions && this.state.category &&
-          <NewProduct category_id={this.state.category.id} reload={this.loadProducts}/>
+          <div>
+            <label>
+              <div className="btn btn-default">Upload product from CSV file</div>
+              <input type="file" style={{display: "none"}} name="fileName" defaultValue="fileName" onChange={this.handleFileChange}></input>
+            </label>
+            <br />
+            <br />
+            <NewProduct product={this.state.active_product} category_id={this.state.category.id} reload={this.loadProducts}/>
+          </div>
         }
         {products}
         {products.length == 0 &&
@@ -117,11 +175,16 @@ Products.defaultProps = {
 product_styles = {
   float: 'left',
   width: 150,
-  height: 160,
+  height: 250,
   margin: 2,
   padding: 4,
   border: 2,
   borderStyle: 'solid',
   borderRadius: 3,
   borderColor: 'black',
+}
+
+img_styles = {
+  maxWidth: product_styles.width - 2 * (product_styles.margin + product_styles.padding),
+  maxHeight: product_styles.width - 2 * (product_styles.margin + product_styles.padding),
 }

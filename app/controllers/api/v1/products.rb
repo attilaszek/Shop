@@ -1,3 +1,6 @@
+require "base64"
+require "csv"
+
 module API  
   module V1
     class Products < Grape::API
@@ -12,9 +15,8 @@ module API
         end
         get "", root: :products do
           if params[:category_id].present?
-            category = Category.find(params[:category_id])
-            categories = category.descendant_ids.to_a
-            categories << category.id
+            categories = Category.cached_categories_by_parent(params[:category_id]).map { |category| category.id }
+            categories << params[:category_id]
             Product.where("category_id IN (?)", categories)
           else
             Product.all
@@ -36,16 +38,20 @@ module API
           requires :price, type: Float, desc: "Price of the new product"
           optional :description, type: String, desc: "Description of the new product"
           requires :category_id, type: Integer, desc: "ID of category"
+          optional :image_b64, type: String, desc: "Product image decoded in base64"
         end
         post do
           return unless current_user.admin
-          @product = Product.new({
-            name: params[:name],
+
+          product = Product.where(name: params[:name]).find_or_create_by({})
+
+          product.update({
             price: params[:price],
             description: params[:description],
-            category_id: params[:category_id]
+            category_id: params[:category_id],
+            image_b64: params[:image_b64]
           })
-          @product.save
+          product.save
         end
 
         desc "Update a product"
@@ -71,6 +77,38 @@ module API
         delete ':id' do
           return unless current_user.admin
           Product.find(params[:id]).destroy
+        end
+
+        desc "Upload product from file"
+        params do
+          requires :file_b64, type: String, desc: "Base64 encoded csv file"
+          requires :category_id, type: Integer, desc: "ID of category"
+        end
+        post "upload" do
+          file = Base64.decode64(params[:file_b64][21..-1])
+          
+          begin
+            rows = CSV.parse(file)[1..-1]
+          rescue
+            error!({csv_file: "Invalid format"}, 404)
+          end
+
+          rows.each do |row|
+            return unless current_user.admin
+
+            product = Product.where(name: row[0]).find_or_create_by({})
+
+            product.update({
+              price: row[1],
+              description: row[2],
+              category_id: params[:category_id],
+              image_b64: "data:image/jpeg;base64," + Base64.encode64(open(row[3]) { |io| io.read })
+            })
+            product.save
+          end
+
+          true
+
         end
       end
     end
